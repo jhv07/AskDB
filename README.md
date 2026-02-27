@@ -149,8 +149,22 @@ This modular design allows future integration of real LLM APIs.
 
 ## 📄 License
 
-This project is licensed under the **MIT License**.
+This project is licensed under the MIT License.
 
 You are free to use, modify, and distribute this software for personal or commercial purposes, provided that proper attribution is given.
 
+To formally apply this license, create a file named LICENSE in the root of the repository and add the standard MIT License text.
 
+---
+
+⚠️ Disclaimer
+
+This project is built for educational, demonstration, and portfolio purposes only.
+
+The application currently operates on simulated/sample data.
+
+It is not intended for production database environments.
+
+Any real-world deployment should implement proper security hardening, validation layers, and database safeguards.
+
+The author is not responsible for misuse of this project in live production systems.
