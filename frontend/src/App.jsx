@@ -19,6 +19,7 @@ export default function App() {
                     {/* Protected Application Routes */}
                     <Route element={<ProtectedRoute />}>
                         <Route path="/" element={<Dashboard />} />
+                        <Route path="/dashboard" element={<Dashboard />} />
                     </Route>
 
                     {/* Fallback routing */}
@@ -28,3 +29,4 @@ export default function App() {
         </AuthProvider>
     );
 }
+

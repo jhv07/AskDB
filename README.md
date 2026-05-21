@@ -1,170 +1,152 @@
-# 🚀 AskDB – Intelligent Database Query Assistant
+# AskDB — Natural Language MongoDB Query Engine
 
-AskDB is a full-stack SaaS application that enables users to query MongoDB databases using natural language.
-
-It simulates an AI-powered database intelligence pipeline including intent detection, schema mapping, query generation, validation, risk analysis, optimization, and execution comparison.
+> Type English. Get MongoDB queries. Instantly.
 
 ---
 
-## 🌟 Key Features
+## Quick Start
 
-* 🔐 JWT-based Authentication (Login / Register)
-* 🧠 Natural Language → MongoDB Query Simulation
-* ⚙️ AI Execution Pipeline Visualizer
-* 📊 MongoDB vs SQL Execution Comparison
-* 🧾 Query History Tracking
-* 🎨 Modern UI with Animated Background & Typing Effects
-* 🏗 MVC Backend Architecture
+### Prerequisites
+- **Node.js** v18 or v22 LTS
+- **MongoDB** running locally on port 27017
+- **Ollama** running locally with `llama3` or `llama3.2`
 
----
-
-## 🛠 Tech Stack
-
-### Frontend
-
-* React.js
-* Tailwind CSS
-* Framer Motion
-* Custom Animated Components
-
-### Backend
-
-* Node.js
-* Express.js
-* MongoDB
-* JWT Authentication
-* REST APIs
-
----
-
-## 🏗 Architecture Overview
-
-AskDB follows a clean separation of concerns:
-
-```
-AskDB/
-│
-├── backend/
-│   ├── config/
-│   ├── controllers/
-│   ├── middleware/
-│   ├── models/
-│   ├── routes/
-│   ├── services/
-│   └── server.js
-│
-├── frontend/
-│   ├── src/
-│   ├── components/
-│   └── pages/
-│
-└── README.md
+### Start Ollama
+```bash
+ollama serve
+ollama pull llama3
 ```
 
----
-
-## 🔐 Environment Setup
-
-Create a `.env` file inside the `backend` directory:
-
-```
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_secret_key
-PORT=5000
-```
-
-⚠️ Never commit `.env` to GitHub.
-
----
-
-## ▶️ Installation Guide
-
-### 1️⃣ Clone Repository
-
-```
-git clone https://github.com/jhv07/AskDB.git
-cd AskDB
-```
-
----
-
-### 2️⃣ Backend Setup
-
-```
-cd backend
-npm install
-npm start
-```
-
-Backend runs at:
-
-```
-http://localhost:5000
-```
-
----
-
-### 3️⃣ Frontend Setup
-
-Open a new terminal:
-
-```
-cd frontend
+### Terminal 1 — Backend
+```bash
+cd AskDB/backend
 npm install
 npm run dev
 ```
 
-Frontend runs at:
+Backend starts at: **http://localhost:5000**  
+Auto-seeds sample data on first run (employees, customers, orders, students, products, sales).
+
+### Terminal 2 — Frontend
+```bash
+cd AskDB/frontend
+npm install
+npm run dev
+```
+
+Frontend starts at: **http://localhost:5173**
+
+---
+
+## Environment Variables
+
+### Backend `.env`
+```
+PORT=5000
+MONGO_URI=mongodb://127.0.0.1:27017/AskDB
+DB_NAME=AskDB
+JWT_SECRET=askdb_super_secret_jwt_key_change_in_production
+OLLAMA_URL=http://localhost:11434
+OLLAMA_MODEL=llama3
+SCHEMA_CACHE_TTL_MS=300000
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+```
+
+### Frontend `.env`
+```
+VITE_API_URL=http://localhost:5000
+VITE_GOOGLE_CLIENT_ID=your_google_client_id
+```
+
+---
+
+## Demo Queries
+
+### Basic
+- Show all students with marks above 80
+- Find customers from Hyderabad
+- Count all active users
+
+### Aggregation
+- Total monthly revenue grouped by category
+- Top 5 employees by salary
+- Find departments with more than 5 employees
+- Show average marks department-wise
+
+### Advanced
+- Find the second highest salary
+- Find employees above average salary
+- Find employees who joined in last 30 days
+- Find employees whose name starts with "A"
+
+### Joins
+- Find customer names with their total orders
+- Show employees with department details
+
+---
+
+## Architecture
 
 ```
-http://localhost:5173
+AskDB/
+├── backend/
+│   ├── config/db.js          # MongoDB connection + auto-seed
+│   ├── controllers/
+│   │   └── authController.js # JWT auth (register/login/me)
+│   ├── middleware/
+│   │   └── authMiddleware.js # JWT verification
+│   ├── models/
+│   │   ├── User.js           # User model
+│   │   └── QueryHistory.js   # History model
+│   ├── routes/
+│   │   ├── auth.js           # /api/auth/*
+│   │   ├── query.js          # /api/query
+│   │   ├── history.js        # /api/history
+│   │   └── schema.js         # /api/schema
+│   ├── services/
+│   │   ├── ollamaService.js  # AI query generation
+│   │   ├── mongoExecutor.js  # Secure query execution
+│   │   ├── queryValidator.js # Security validation
+│   │   ├── schemaService.js  # Schema introspection
+│   │   ├── nlpExtractor.js   # NLP fallback
+│   │   └── intentClassifier.js
+│   └── server.js
+└── frontend/
+    └── src/
+        ├── pages/
+        │   ├── Dashboard.jsx  # Main query interface
+        │   ├── Login.jsx
+        │   └── Register.jsx
+        ├── components/
+        │   ├── QueryHistoryPanel.jsx
+        │   ├── QueryOutputCard.jsx
+        │   ├── QueryPipelineVisualizer.jsx
+        │   ├── ExplanationCard.jsx
+        │   ├── ResultRenderer.jsx
+        │   └── ...
+        ├── context/AuthContext.jsx
+        └── services/api.js
 ```
 
 ---
 
-## 📊 AI Pipeline Flow (Simulated)
+## Security
 
-1. Intent Detection
-2. Schema Mapping
-3. Query Generation
-4. Validation
-5. Risk Analysis
-6. Optimization
-7. Execution Simulation
-
-This modular design allows future integration of real LLM APIs.
+All queries are **read-only**. The following operations are permanently blocked:
+- `deleteMany`, `updateMany`, `insertMany`
+- `dropDatabase`, `drop`, `eval`
+- `$where`, `$function`, `$accumulator`
+- `mapReduce`, `$out`, `$merge`
 
 ---
 
-## 🚀 Future Enhancements
+## Tech Stack
 
-* Integration with OpenAI / LLM APIs
-* Real-time MongoDB execution
-* hRole-based Access Control
-* Docker Deployment
-* Cloud Hosting (Render / Vercel)
-* Analytics Dashboard
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License.
-
-You are free to use, modify, and distribute this software for personal or commercial purposes, provided that proper attribution is given.
-
-To formally apply this license, create a file named LICENSE in the root of the repository and add the standard MIT License text.
-
----
-
-⚠️ Disclaimer
-
-This project is built for educational, demonstration, and portfolio purposes only.
-
-The application currently operates on simulated/sample data.
-
-It is not intended for production database environments.
-
-Any real-world deployment should implement proper security hardening, validation layers, and database safeguards.
-
-The author is not responsible for misuse of this project in live production systems.
+| Layer | Technology |
+|-------|-----------|
+| Frontend | React 18, Vite, Tailwind CSS, Framer Motion |
+| Backend | Node.js, Express.js |
+| Database | MongoDB (local) |
+| AI | Ollama (llama3) |
+| Auth | JWT + bcrypt |

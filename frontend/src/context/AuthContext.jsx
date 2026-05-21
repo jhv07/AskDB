@@ -1,58 +1,60 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
-    const [token, setToken] = useState(localStorage.getItem('token') || null);
+    const [user, setUser]     = useState(null);
+    const [token, setToken]   = useState(localStorage.getItem('token') || null);
     const [loading, setLoading] = useState(true);
 
-    // Setup Axios Defaults
+    // On mount or token change — validate the token and load user profile
     useEffect(() => {
         if (token) {
-            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-            localStorage.setItem('token', token);
-
-            // Attempt to load user profile
             const loadUser = async () => {
                 try {
-                    const res = await axios.get('http://localhost:5000/api/auth/me');
+                    const res = await api.get('/auth/me');
                     setUser(res.data);
                 } catch (error) {
-                    console.error("Session expired or invalid token", error);
-                    logout();
+                    console.error('Session expired or invalid token:', error.message);
+                    // Clear stale token
+                    localStorage.removeItem('token');
+                    setToken(null);
+                    setUser(null);
                 } finally {
                     setLoading(false);
                 }
             };
             loadUser();
         } else {
-            delete axios.defaults.headers.common['Authorization'];
-            localStorage.removeItem('token');
             setUser(null);
             setLoading(false);
         }
     }, [token]);
 
-    const login = async (email, password) => {
-        const res = await axios.post('http://localhost:5000/api/auth/login', { email, password });
-        setToken(res.data.token);
-        setUser(res.data.user);
-        return res.data;
+    // Called after successful login
+    const login = (receivedToken, receivedUser) => {
+        localStorage.setItem('token', receivedToken);
+        setToken(receivedToken);
+        setUser(receivedUser);
     };
 
+    // Register and auto-login
     const register = async (username, email, password) => {
-        const res = await axios.post('http://localhost:5000/api/auth/register', { username, email, password });
-        setToken(res.data.token);
-        setUser(res.data.user);
+        const res = await api.post('/auth/register', { username, email, password });
+        const receivedToken = res.data.token;
+        if (receivedToken) {
+            localStorage.setItem('token', receivedToken);
+            setToken(receivedToken);
+            setUser(res.data.user);
+        }
         return res.data;
     };
 
     const logout = () => {
+        localStorage.removeItem('token');
         setToken(null);
         setUser(null);
-        // Let router handle redirect by clearing token usually
     };
 
     return (

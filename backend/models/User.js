@@ -5,8 +5,10 @@ class User {
         return getDB().collection('users');
     }
 
-    static async findByEmail(email) {
-        return await this.getCollection().findOne({ email });
+    static async findByEmailOrUsername(identifier) {
+        return await this.getCollection().findOne({
+            $or: [{ email: identifier }, { username: identifier }]
+        });
     }
 
     static async findById(id) {
